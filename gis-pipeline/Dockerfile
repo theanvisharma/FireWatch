@@ -14,5 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "satellite/modis_viirs_fetcher.py"]
-
+CMD ["python", "run_pipeline.py", "--output", "/data/hotspots.geojson"]

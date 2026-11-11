@@ -112,6 +112,13 @@ docker compose up --build
 - **FastAPI Swagger Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
 - **PostGIS Port:** `localhost:5432`
 
+To run the GIS hotspot export separately (simulated sample data by default):
+```bash
+docker compose --profile gis run --rm gis-pipeline
+```
+See [`gis-pipeline/README.md`](./gis-pipeline/README.md) for running it with
+NASA FIRMS credentials and exporting the GeoJSON output.
+
 ---
 
 ### Option B: Run Modules Independently

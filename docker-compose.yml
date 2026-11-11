@@ -40,6 +40,18 @@ services:
     ports:
       - "8000:8000"
 
+  gis-pipeline:
+    profiles: ["gis"]
+    build:
+      context: ./gis-pipeline
+      dockerfile: Dockerfile
+    container_name: firewatch-gis-pipeline
+    environment:
+      - NASA_FIRMS_MAP_KEY=${NASA_FIRMS_MAP_KEY:-}
+    command: ["python", "run_pipeline.py", "--output", "/data/hotspots.geojson"]
+    volumes:
+      - gis_data:/data
+
   frontend:
     build:
       context: ./frontend
@@ -56,4 +68,4 @@ services:
 
 volumes:
   postgis_data:
-
+  gis_data:
