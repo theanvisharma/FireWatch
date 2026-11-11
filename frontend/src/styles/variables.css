@@ -1,0 +1,23 @@
+:root {
+  --bg-main: #0D0F10;
+  --bg-secondary: #141718;
+  --bg-card: #191D1E;
+  --bg-elevated: #202526;
+  --border-subtle: #2B3031;
+  --border-hover: #3D4446;
+  
+  --text-primary: #F2F2EF;
+  --text-secondary: #929A98;
+  --text-muted: #697270;
+  
+  --brand-orange: #D97735;
+  --brand-soft: #B96932;
+  --brand-highlight: #E69A5C;
+  
+  --risk-low: #43A879;
+  --risk-moderate: #D5B34A;
+  --risk-high: #DB873A;
+  --risk-very-high: #D95343;
+  --risk-extreme: #8F2528;
+}
+
