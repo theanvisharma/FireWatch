@@ -32,3 +32,16 @@ def get_db() -> Generator:
     finally:
         db.close()
 
+def init_db() -> None:
+    """Create PostGIS extensions and all SQLAlchemy tables."""
+    if engine is None:
+        logger.warning("Skipping DB table creation: engine is None.")
+        return
+    from sqlalchemy import text
+    import backend.app.models  # noqa: F401 - registers all models on Base
+
+    with engine.begin() as conn:
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis;"))
+        conn.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'))
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database tables verified/created successfully.")

@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from backend.app.core.config import settings
+from backend.app.core.database import init_db
+from backend.app.core.seed import seed_database
 from backend.app.api.v1.api import api_router
 
 app = FastAPI(
@@ -21,6 +23,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
+    seed_database()
+
 
 # API v1 Router
 app.include_router(api_router, prefix=settings.API_V1_STR)
@@ -53,4 +62,3 @@ def root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.app.main:app", host="0.0.0.0", port=8000, reload=True)
-
