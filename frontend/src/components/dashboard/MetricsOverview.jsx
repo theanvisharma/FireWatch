@@ -1,44 +1,51 @@
 import React from 'react';
-import { StatMetric } from '../common/StatMetric';
-import { Shield, AlertTriangle, Flame, Activity } from 'lucide-react';
-import { RISK_COLORS } from '../../utils/constants';
+import { StatCard } from '../common/StatMetric';
+import { Shield, AlertTriangle, Flame, Sparkles } from 'lucide-react';
 
 export function MetricsOverview({ summary }) {
   if (!summary) return null;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <StatMetric
-        label="Monitored Regions"
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4.5">
+      <StatCard
+        label="Total Monitored Regions"
         value={summary.total_monitored_regions}
-        unit="Sectors"
+        unit="Basins"
         icon={Shield}
-        caption="Continuous multi-sensor surveillance"
+        caption="Continuous multi-sensor satellite coverage"
+        trend="+2 newly mapped"
+        trendPositive={true}
       />
-      <StatMetric
-        label="High Risk Zones"
+      <StatCard
+        label="High-Risk Regions"
         value={summary.high_risk_locations}
         unit="Critical"
         icon={Flame}
         accentColor="#D95343"
-        caption="Risk score >= 70% threshold"
+        caption="Risk index >= 70% threshold"
+        trend="Elevated thermal stress"
+        trendPositive={false}
       />
-      <StatMetric
-        label="Active Alerts"
+      <StatCard
+        label="Active Fire Alerts"
         value={summary.active_alerts}
-        unit="Warnings"
+        unit="Directives"
         icon={AlertTriangle}
         accentColor="#DB873A"
-        caption="Immediate mitigation directives"
+        caption="Actionable early warning orders"
+        trend="1 extreme severity"
+        trendPositive={false}
       />
-      <StatMetric
-        label="Avg Predicted Risk"
-        value={`${summary.avg_wildfire_risk}%`}
-        icon={Activity}
+      <StatCard
+        label="Predictions Generated"
+        value="142"
+        unit="Runs / 24h"
+        icon={Sparkles}
         accentColor="#D97735"
-        caption="Aggregated cross-region vulnerability"
+        caption="XGBoost & Random Forest multi-horizon"
+        trend="99.4% uptime"
+        trendPositive={true}
       />
     </div>
   );
 }
-

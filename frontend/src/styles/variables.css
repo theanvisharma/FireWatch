@@ -1,23 +1,71 @@
+/* FireWatch AI — Central Theme System Variables */
+
 :root {
+  /* Light Theme (Default fallback) */
+  --bg-main: #F5F7F6;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F0F4F2;
+  --bg-input: #FFFFFF;
+  --border-subtle: #E5E9E7;
+  --border-hover: #CBD5D1;
+  --border-focus: #C96B2C;
+  
+  --text-primary: #202725;
+  --text-secondary: #606C68;
+  --text-muted: #8E9995;
+  
+  --brand-orange: #C96B2C;
+  --brand-orange-hover: #B55B20;
+  --brand-soft: #E69A5C;
+  --brand-subtle-bg: rgba(201, 107, 44, 0.08);
+  --brand-subtle-border: rgba(201, 107, 44, 0.25);
+  
+  /* Wildfire Severity Palette */
+  --risk-low: #43A879;
+  --risk-moderate: #D5B34A;
+  --risk-high: #DB873A;
+  --risk-very-high: #D95343;
+  --risk-extreme: #8F2528;
+  
+  /* Map & Chart Overrides */
+  --map-tile-url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  --chart-grid: #EAEFEA;
+  --chart-tooltip-bg: #FFFFFF;
+  --chart-tooltip-border: #E5E9E7;
+  
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-card: 0 4px 12px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+  --shadow-elevated: 0 12px 28px -4px rgba(0, 0, 0, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+}
+
+html.dark {
+  /* Dark Theme */
   --bg-main: #0D0F10;
   --bg-secondary: #141718;
   --bg-card: #191D1E;
   --bg-elevated: #202526;
+  --bg-input: #141718;
   --border-subtle: #2B3031;
   --border-hover: #3D4446;
+  --border-focus: #D97735;
   
   --text-primary: #F2F2EF;
   --text-secondary: #929A98;
   --text-muted: #697270;
   
   --brand-orange: #D97735;
-  --brand-soft: #B96932;
-  --brand-highlight: #E69A5C;
+  --brand-orange-hover: #B96932;
+  --brand-soft: #E69A5C;
+  --brand-subtle-bg: rgba(217, 119, 53, 0.12);
+  --brand-subtle-border: rgba(217, 119, 53, 0.30);
   
-  --risk-low: #43A879;
-  --risk-moderate: #D5B34A;
-  --risk-high: #DB873A;
-  --risk-very-high: #D95343;
-  --risk-extreme: #8F2528;
+  --map-tile-url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+  --chart-grid: #202526;
+  --chart-tooltip-bg: #191D1E;
+  --chart-tooltip-border: #2B3031;
+  
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-elevated: 0 12px 32px rgba(0, 0, 0, 0.6);
 }
-

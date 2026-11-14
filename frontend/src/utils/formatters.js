@@ -47,4 +47,3 @@ export function getRiskStyles(level) {
     borderColor: RISK_BORDER_COLORS[lvl] || RISK_BORDER_COLORS.Low,
   };
 }
-

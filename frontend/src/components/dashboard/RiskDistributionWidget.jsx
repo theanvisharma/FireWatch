@@ -7,15 +7,14 @@ export function RiskDistributionWidget({ distribution = [] }) {
     <Card className="p-5 flex flex-col justify-between">
       <CardHeader
         title="Risk Distribution"
-        subtitle="Zonal wildfire severity categorisation"
+        subtitle="Zonal wildfire severity categorization across monitored sectors"
       />
-      <div className="my-auto">
+      <div className="my-auto py-2">
         <RiskPieChart data={distribution} height={190} />
       </div>
-      <div className="mt-4 pt-3 border-t border-[#2B3031] text-[11px] text-[#697270] text-center">
-        Thresholds calibrated according to NWCG Canadian & Indian forest indices.
+      <div className="mt-4 pt-3 border-t border-border-subtle text-[11px] text-text-muted text-center">
+        Calibrated according to Indian Forest Survey & Canadian FWI indices.
       </div>
     </Card>
   );
 }
-

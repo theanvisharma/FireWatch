@@ -10,30 +10,32 @@ export function MiniMapCard({ sectors = [] }) {
   return (
     <Card className="p-5 flex flex-col justify-between overflow-hidden">
       <CardHeader
-        title="Geographical Risk Map Preview"
-        subtitle="Active surveillance grid coverage"
+        title="Wildfire Risk Overview Map"
+        subtitle="Active surveillance grid coverage and hot spot radar"
         action={
           <button
+            type="button"
             onClick={() => navigate('/map')}
-            className="p-1.5 rounded-lg bg-[#202526] hover:bg-[#2B3031] text-[#D97735] hover:text-[#E69A5C] border border-[#2B3031] transition-colors"
-            title="Open Full Map"
+            className="p-1.5 rounded-panel bg-bg-elevated hover:bg-border-subtle text-brand-orange hover:text-brand-hover border border-border-subtle transition-colors"
+            title="Open Interactive Risk Map"
+            aria-label="Expand map"
           >
             <Maximize2 className="w-3.5 h-3.5" />
           </button>
         }
       />
 
-      {/* Styled Mock GIS Canvas Preview */}
+      {/* Styled GIS Canvas Preview */}
       <div
         onClick={() => navigate('/map')}
-        className="relative h-44 rounded-panel bg-[#141718] border border-[#2B3031] overflow-hidden cursor-pointer group flex items-center justify-center"
+        className="relative h-44 rounded-card bg-bg-elevated border border-border-subtle overflow-hidden cursor-pointer group flex items-center justify-center transition-all"
       >
         {/* Subtle grid pattern background */}
         <div
-          className="absolute inset-0 opacity-15 pointer-events-none"
+          className="absolute inset-0 opacity-20 pointer-events-none"
           style={{
             backgroundImage:
-              'radial-gradient(circle at 1px 1px, #929A98 1px, transparent 0)',
+              'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)',
             backgroundSize: '18px 18px',
           }}
         />
@@ -51,12 +53,12 @@ export function MiniMapCard({ sectors = [] }) {
                 style={{ top: `${topPos}%`, left: `${leftPos}%` }}
               >
                 <span
-                  className="w-3 h-3 rounded-full border border-black/40 flex items-center justify-center shadow-lg"
+                  className="w-3 h-3 rounded-full border border-black/30 flex items-center justify-center shadow-subtle"
                   style={{ backgroundColor: color }}
                 >
-                  <span className="w-1 h-1 rounded-full bg-white/80" />
+                  <span className="w-1 h-1 rounded-full bg-white/90" />
                 </span>
-                <span className="text-[9px] font-mono text-[#929A98] bg-[#0D0F10]/80 px-1 py-0.5 rounded border border-[#2B3031]/50 whitespace-nowrap">
+                <span className="text-[9px] font-mono font-medium text-text-secondary bg-bg-card/90 px-1 py-0.5 rounded border border-border-subtle whitespace-nowrap shadow-subtle">
                   {sector.risk_score}%
                 </span>
               </div>
@@ -64,18 +66,17 @@ export function MiniMapCard({ sectors = [] }) {
           })}
         </div>
 
-        {/* Hover pill */}
-        <div className="relative z-10 px-3.5 py-1.5 rounded-panel bg-[#202526]/90 border border-[#2B3031] text-xs text-[#F2F2EF] font-medium flex items-center gap-2 group-hover:border-[#D97735] transition-colors shadow-elevated">
-          <MapPin className="w-3.5 h-3.5 text-[#D97735]" />
-          <span>Launch Interactive Geospatial Map</span>
+        {/* Hover Launch Action Button */}
+        <div className="relative z-10 px-4 py-2 rounded-panel bg-bg-card/95 border border-border-subtle text-xs text-text-primary font-semibold flex items-center gap-2 group-hover:border-brand-orange transition-all shadow-elevated">
+          <MapPin className="w-3.5 h-3.5 text-brand-orange" />
+          <span>Launch Full Interactive Map</span>
         </div>
       </div>
 
-      <div className="mt-3 pt-3 border-t border-[#2B3031] flex items-center justify-between text-[11px] text-[#697270]">
+      <div className="mt-3 pt-3 border-t border-border-subtle flex items-center justify-between text-[11px] text-text-muted">
         <span>Coverage: 8 Key Ecological Basins</span>
-        <span className="font-mono text-[#F2F2EF]">MODIS / VIIRS Active</span>
+        <span className="font-mono text-text-primary font-medium">MODIS / VIIRS Live</span>
       </div>
     </Card>
   );
 }
-

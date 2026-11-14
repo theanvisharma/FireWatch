@@ -1,21 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardHeader } from '../components/common/Card';
 import { RiskBadge } from '../components/common/RiskBadge';
 import { TrendLineChart } from '../components/charts/TrendLineChart';
 import { EnvironmentalComparisonChart } from '../components/charts/EnvironmentalComparisonChart';
 import { SimulationDisclaimer } from '../components/common/SimulationDisclaimer';
-import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { Button } from '../components/common/Button';
 import { MOCK_HISTORICAL_EVENTS, MOCK_SECTORS } from '../services/mockData';
 import { formatCoords } from '../utils/formatters';
 import {
   History,
   Search,
-  Filter,
-  Calendar,
   Download,
-  Flame,
-  Thermometer,
-  Wind,
+  Calendar,
+  Filter,
 } from 'lucide-react';
 
 export function HistoricalData() {
@@ -40,36 +37,37 @@ export function HistoricalData() {
   const severities = ['All', 'Extreme', 'Very High', 'High', 'Moderate'];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pb-8">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#2B3031]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border-subtle">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-[#F2F2EF] flex items-center gap-2">
-            <History className="w-5 h-5 text-[#D97735]" />
-            Historical Wildfire Intelligence
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-text-primary flex items-center gap-2">
+            <History className="w-5 h-5 text-brand-orange" />
+            Historical Wildfire Intelligence Archive
           </h1>
-          <p className="text-xs text-[#929A98]">
-            Archived wildfire ignition events, environmental forensics, and burn area analytics.
+          <p className="text-xs text-text-secondary leading-relaxed">
+            Archived wildfire ignition events, environmental forensics, and burn area analytics across historical fire seasons.
           </p>
         </div>
 
-        <button
-          onClick={() => alert('Exporting CSV historical wildfire log...')}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-panel text-xs font-medium bg-[#191D1E] hover:bg-[#202526] text-[#F2F2EF] border border-[#2B3031] transition-colors self-start sm:self-auto"
+        <Button
+          variant="secondary"
+          size="sm"
+          icon={Download}
+          onClick={() => alert('Exporting historical wildfire records (CSV)...')}
         >
-          <Download className="w-3.5 h-3.5 text-[#D97735]" />
-          <span>Export Dataset (CSV)</span>
-        </button>
+          Export Dataset (CSV)
+        </Button>
       </div>
 
       <SimulationDisclaimer />
 
-      {/* Two Comparative Charts */}
+      {/* Two Analytical Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="p-5">
           <CardHeader
             title="Multi-Day Risk Index vs Ambient Temperature"
-            subtitle="Correlating severe heatwaves with ignition vulnerability spikes"
+            subtitle="Correlating heatwave duration with ignition vulnerability spikes"
           />
           <TrendLineChart height={220} />
         </Card>
@@ -84,46 +82,46 @@ export function HistoricalData() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-panel bg-[#191D1E] border border-[#2B3031] space-y-3">
+      <div className="p-4 rounded-card bg-bg-card border border-border-subtle shadow-card space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Search box */}
           <div className="relative flex-1 max-w-sm">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#697270]" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
             <input
               type="text"
               placeholder="Search historical records, causes, or IDs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#141718] border border-[#2B3031] focus:border-[#D97735] focus:outline-none rounded-panel pl-8 pr-3 py-1.5 text-xs text-[#F2F2EF] placeholder-[#697270]"
+              className="w-full bg-bg-input border border-border-subtle focus:border-border-focus focus:outline-none rounded-panel pl-8 pr-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted shadow-subtle"
             />
           </div>
 
           {/* Region and Severity Selectors */}
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <div className="flex items-center gap-1.5 bg-[#141718] border border-[#2B3031] rounded-panel px-2.5 py-1">
-              <span className="text-[#697270] text-[10px] uppercase font-semibold">Region:</span>
+          <div className="flex flex-wrap items-center gap-2.5 text-xs">
+            <div className="flex items-center gap-1.5 bg-bg-elevated border border-border-subtle rounded-panel px-3 py-1.5 shadow-subtle">
+              <span className="text-text-muted text-[10px] uppercase font-semibold">Region:</span>
               <select
                 value={selectedRegion}
                 onChange={(e) => setSelectedRegion(e.target.value)}
-                className="bg-transparent text-[#F2F2EF] focus:outline-none text-xs cursor-pointer"
+                className="bg-transparent text-text-primary focus:outline-none text-xs cursor-pointer font-medium"
               >
                 {regions.map((r) => (
-                  <option key={r} value={r} className="bg-[#191D1E] text-[#F2F2EF]">
+                  <option key={r} value={r} className="bg-bg-card text-text-primary">
                     {r}
                   </option>
                 ))}
               </select>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-[#141718] border border-[#2B3031] rounded-panel px-2.5 py-1">
-              <span className="text-[#697270] text-[10px] uppercase font-semibold">Severity:</span>
+            <div className="flex items-center gap-1.5 bg-bg-elevated border border-border-subtle rounded-panel px-3 py-1.5 shadow-subtle">
+              <span className="text-text-muted text-[10px] uppercase font-semibold">Severity:</span>
               <select
                 value={selectedSeverity}
                 onChange={(e) => setSelectedSeverity(e.target.value)}
-                className="bg-transparent text-[#F2F2EF] focus:outline-none text-xs cursor-pointer"
+                className="bg-transparent text-text-primary focus:outline-none text-xs cursor-pointer font-medium"
               >
                 {severities.map((s) => (
-                  <option key={s} value={s} className="bg-[#191D1E] text-[#F2F2EF]">
+                  <option key={s} value={s} className="bg-bg-card text-text-primary">
                     {s}
                   </option>
                 ))}
@@ -143,7 +141,7 @@ export function HistoricalData() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-[#2B3031] text-[#697270] uppercase tracking-wider text-[10px]">
+              <tr className="border-b border-border-subtle text-text-muted uppercase tracking-wider text-[10px]">
                 <th className="pb-3 font-semibold">Event ID & Date</th>
                 <th className="pb-3 font-semibold">Location & Region</th>
                 <th className="pb-3 font-semibold">Severity</th>
@@ -153,35 +151,35 @@ export function HistoricalData() {
                 <th className="pb-3 font-semibold text-right">Sensor</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2B3031]/50 text-[#929A98]">
+            <tbody className="divide-y divide-border-subtle text-text-secondary">
               {filteredEvents.map((ev) => (
-                <tr key={ev.id} className="hover:bg-[#202526]/50 transition-colors">
+                <tr key={ev.id} className="hover:bg-bg-elevated/50 transition-colors">
                   <td className="py-3 font-mono">
-                    <div className="font-semibold text-[#F2F2EF]">{ev.id}</div>
-                    <div className="text-[10px] text-[#697270]">{ev.incident_date}</div>
+                    <div className="font-bold text-text-primary">{ev.id}</div>
+                    <div className="text-[10px] text-text-muted">{ev.incident_date}</div>
                   </td>
                   <td className="py-3">
-                    <div className="font-medium text-[#F2F2EF]">{ev.location_name}</div>
-                    <div className="text-[10px] text-[#697270]">{ev.region}</div>
+                    <div className="font-semibold text-text-primary">{ev.location_name}</div>
+                    <div className="text-[10px] text-text-muted">{ev.region}</div>
                   </td>
                   <td className="py-3">
                     <RiskBadge level={ev.severity} score={ev.max_risk_score} size="sm" />
                   </td>
-                  <td className="py-3 font-mono text-[#F2F2EF]">
-                    {ev.area_burned_hectares} ha
-                    <span className="block text-[10px] text-[#697270]">
+                  <td className="py-3 font-mono text-text-primary">
+                    <span className="font-bold">{ev.area_burned_hectares}</span> ha
+                    <span className="block text-[10px] text-text-muted">
                       Contained in {ev.containment_days}d
                     </span>
                   </td>
-                  <td className="py-3 text-[#F2F2EF]">{ev.cause}</td>
+                  <td className="py-3 text-text-primary font-medium">{ev.cause}</td>
                   <td className="py-3 font-mono text-[11px]">
-                    <div className="text-[#DB873A]">{ev.temperature_at_ignition}°C Temp</div>
-                    <div className="text-[#697270]">
+                    <div className="text-[#DB873A] font-medium">{ev.temperature_at_ignition}°C Temp</div>
+                    <div className="text-text-muted">
                       {ev.wind_speed_at_ignition}km/h | {ev.soil_moisture_at_ignition}% moist
                     </div>
                   </td>
                   <td className="py-3 text-right">
-                    <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-[#202526] border border-[#2B3031] text-[#929A98]">
+                    <span className="px-2 py-0.5 rounded-panel font-mono text-[10px] bg-bg-elevated border border-border-subtle text-text-secondary font-medium">
                       {ev.satellite_detection_sensor}
                     </span>
                   </td>
@@ -194,4 +192,3 @@ export function HistoricalData() {
     </div>
   );
 }
-

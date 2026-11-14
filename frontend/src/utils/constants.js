@@ -15,10 +15,10 @@ export const RISK_COLORS = {
 };
 
 export const RISK_BG_COLORS = {
-  Low: 'rgba(67, 168, 121, 0.12)',
-  Moderate: 'rgba(213, 179, 74, 0.12)',
-  High: 'rgba(219, 135, 58, 0.12)',
-  'Very High': 'rgba(217, 83, 67, 0.12)',
+  Low: 'rgba(67, 168, 121, 0.14)',
+  Moderate: 'rgba(213, 179, 74, 0.14)',
+  High: 'rgba(219, 135, 58, 0.14)',
+  'Very High': 'rgba(217, 83, 67, 0.14)',
   Extreme: 'rgba(143, 37, 40, 0.18)',
 };
 
@@ -46,7 +46,7 @@ export const TEAM_MEMBERS = [
     name: 'ANVI',
     role: 'Frontend & UI/UX Lead',
     module: 'frontend/',
-    desc: 'React SPA, dark geospatial design system, Leaflet interactive risk map, telemetry dashboards, state orchestration.',
+    desc: 'React SPA, dark/light geospatial design system, Leaflet interactive risk map, telemetry dashboards, state orchestration.',
     color: '#D97735',
   },
   {
@@ -71,4 +71,3 @@ export const TEAM_MEMBERS = [
     color: '#DB873A',
   },
 ];
-

@@ -1,6 +1,5 @@
 import React from 'react';
-import { RISK_LEVELS } from '../../utils/constants';
-import { Filter, Check } from 'lucide-react';
+import { Filter } from 'lucide-react';
 
 export function AlertFilterBar({
   selectedSeverity,
@@ -12,10 +11,10 @@ export function AlertFilterBar({
   const severities = ['All', 'Extreme', 'Very High', 'High', 'Moderate'];
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-panel bg-[#191D1E] border border-[#2B3031] text-xs">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-card bg-bg-card border border-border-subtle text-xs shadow-card transition-colors">
       {/* Severity Filter Pills */}
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className="text-[#697270] text-[11px] font-medium mr-1 flex items-center gap-1">
+        <span className="text-text-muted text-[11px] font-semibold mr-1 flex items-center gap-1">
           <Filter className="w-3 h-3" />
           Severity:
         </span>
@@ -24,11 +23,12 @@ export function AlertFilterBar({
           return (
             <button
               key={sev}
+              type="button"
               onClick={() => onSelectSeverity(sev)}
-              className={`px-2.5 py-1 rounded-panel text-[11px] font-medium transition-colors ${
+              className={`px-3 py-1 rounded-panel text-[11px] font-semibold transition-all duration-150 ${
                 isActive
-                  ? 'bg-[#D97735] text-[#F2F2EF] font-semibold'
-                  : 'bg-[#202526] text-[#929A98] hover:text-[#F2F2EF] hover:bg-[#2B3031]'
+                  ? 'bg-brand-orange text-white shadow-subtle'
+                  : 'bg-bg-elevated text-text-secondary hover:text-text-primary hover:bg-border-subtle border border-border-subtle'
               }`}
             >
               {sev}
@@ -39,20 +39,19 @@ export function AlertFilterBar({
 
       {/* Unread toggle & count */}
       <div className="flex items-center gap-4 text-xs">
-        <label className="flex items-center gap-2 cursor-pointer text-[#929A98] hover:text-[#F2F2EF]">
+        <label className="flex items-center gap-2 cursor-pointer text-text-secondary hover:text-text-primary font-medium">
           <input
             type="checkbox"
             checked={showUnreadOnly}
             onChange={(e) => onToggleUnreadOnly(e.target.checked)}
-            className="accent-[#D97735] rounded"
+            className="accent-brand-orange rounded cursor-pointer"
           />
           <span>Unread alerts only</span>
         </label>
-        <span className="text-[#697270] font-mono text-[11px]">
+        <span className="text-text-muted font-mono text-[11px]">
           Showing {totalCount} alerts
         </span>
       </div>
     </div>
   );
 }
-

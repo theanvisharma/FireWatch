@@ -3,6 +3,7 @@ import { AlertCard } from '../components/alerts/AlertCard';
 import { AlertFilterBar } from '../components/alerts/AlertFilterBar';
 import { SimulationDisclaimer } from '../components/common/SimulationDisclaimer';
 import { LoadingSpinner, EmptyState } from '../components/common/LoadingSpinner';
+import { Button } from '../components/common/Button';
 import { alertService } from '../services/alertService';
 import { useApp } from '../context/AppContext';
 import { Bell, CheckCheck, RefreshCw, AlertCircle } from 'lucide-react';
@@ -65,31 +66,34 @@ export function Alerts() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pb-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#2B3031]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border-subtle">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-[#F2F2EF] flex items-center gap-2">
-            <Bell className="w-5 h-5 text-[#D97735]" />
-            Early Warning Alerts & Directives
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-text-primary flex items-center gap-2">
+            <Bell className="w-5 h-5 text-brand-orange" />
+            Early Warning Alerts & Mitigation Orders
           </h1>
-          <p className="text-xs text-[#929A98]">
-            Proactive mitigation orders triggered when predicted ignition indices exceed critical thresholds.
+          <p className="text-xs text-text-secondary leading-relaxed">
+            Automated operational directives triggered when predicted flammability metrics exceed critical hazard thresholds.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          <button
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={CheckCheck}
             onClick={handleMarkAllRead}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-panel text-xs font-medium bg-[#191D1E] hover:bg-[#202526] text-[#F2F2EF] border border-[#2B3031] transition-colors"
           >
-            <CheckCheck className="w-3.5 h-3.5 text-[#43A879]" />
-            <span>Acknowledge All</span>
-          </button>
+            Acknowledge All
+          </Button>
           <button
+            type="button"
             onClick={fetchAlerts}
-            className="p-2 rounded-panel bg-[#191D1E] hover:bg-[#202526] text-[#929A98] hover:text-[#F2F2EF] border border-[#2B3031] transition-colors"
+            className="p-2 rounded-panel bg-bg-card hover:bg-bg-elevated text-text-secondary hover:text-text-primary border border-border-subtle transition-colors shadow-subtle"
             title="Refresh alerts"
+            aria-label="Refresh alerts"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
@@ -124,4 +128,3 @@ export function Alerts() {
     </div>
   );
 }
-

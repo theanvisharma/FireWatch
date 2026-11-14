@@ -5,12 +5,41 @@ import { api } from '../services/api';
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
+  // Theme state: 'dark' | 'light'
+  const [theme, setThemeState] = useState(() => {
+    const saved = localStorage.getItem('firewatch_theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  });
+
   const [selectedLocation, setSelectedLocation] = useState(MOCK_SECTORS[0]);
   const [toasts, setToasts] = useState([]);
   const [isMockMode, setIsMockMode] = useState(api.isMockMode());
   const [unreadCount, setUnreadCount] = useState(
     MOCK_ALERTS.filter((a) => !a.is_read).length
   );
+
+  // Sync theme with DOM and localStorage
+  useEffect(() => {
+    localStorage.setItem('firewatch_theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const setTheme = (newTheme) => {
+    if (newTheme === 'dark' || newTheme === 'light') {
+      setThemeState(newTheme);
+    }
+  };
 
   const addToast = (message, type = 'info', duration = 4000) => {
     const id = Date.now().toString() + Math.random().toString(36).substring(2, 5);
@@ -38,6 +67,9 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider
       value={{
+        theme,
+        toggleTheme,
+        setTheme,
         selectedLocation,
         setSelectedLocation: selectLocation,
         toasts,
@@ -61,4 +93,3 @@ export function useApp() {
   }
   return context;
 }
-

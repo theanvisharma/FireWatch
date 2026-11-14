@@ -4,6 +4,7 @@ import { AppProvider } from './context/AppContext';
 import { MainLayout } from './layouts/MainLayout';
 import { Dashboard } from './pages/Dashboard';
 import { RiskMap } from './pages/RiskMap';
+import { Predictions } from './pages/Predictions';
 import { HistoricalData } from './pages/HistoricalData';
 import { Alerts } from './pages/Alerts';
 import { About } from './pages/About';
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="map" element={<RiskMap />} />
+            <Route path="predictions" element={<Predictions />} />
             <Route path="historical" element={<HistoricalData />} />
             <Route path="alerts" element={<Alerts />} />
             <Route path="about" element={<About />} />
@@ -27,4 +29,3 @@ export default function App() {
     </AppProvider>
   );
 }
-

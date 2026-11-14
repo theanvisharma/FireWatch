@@ -1,10 +1,14 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { RISK_COLORS } from '../../utils/constants';
+import { useApp } from '../../context/AppContext';
 
 export function RiskPieChart({ data = [], height = 200 }) {
+  const { theme } = useApp();
+  const isDark = theme === 'dark';
+
   if (!data || data.length === 0) {
-    return <div className="text-xs text-[#697270] text-center py-8">No distribution telemetry</div>;
+    return <div className="text-xs text-text-muted text-center py-8">No distribution telemetry</div>;
   }
 
   const chartData = data.map((item) => ({
@@ -18,13 +22,13 @@ export function RiskPieChart({ data = [], height = 200 }) {
     if (active && payload && payload.length) {
       const d = payload[0].payload;
       return (
-        <div className="bg-[#191D1E] border border-[#2B3031] rounded-panel p-2 shadow-elevated text-xs">
+        <div className="bg-bg-card border border-border-subtle rounded-card p-2.5 shadow-elevated text-xs font-sans">
           <div className="flex items-center gap-2 mb-1">
             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
-            <span className="font-semibold text-[#F2F2EF]">{d.name} Risk</span>
+            <span className="font-semibold text-text-primary">{d.name} Risk</span>
           </div>
-          <div className="text-[#929A98]">
-            {d.value} locations ({d.percentage}%)
+          <div className="text-text-secondary text-[11px]">
+            {d.value} sectors ({d.percentage}%)
           </div>
         </div>
       );
@@ -39,13 +43,18 @@ export function RiskPieChart({ data = [], height = 200 }) {
           <PieChart>
             <Pie
               data={chartData}
-              innerRadius={50}
-              outerRadius={75}
+              innerRadius={52}
+              outerRadius={78}
               paddingAngle={4}
               dataKey="value"
             >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} stroke="#141718" strokeWidth={2} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.color}
+                  stroke={isDark ? '#141718' : '#FFFFFF'}
+                  strokeWidth={2}
+                />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
@@ -53,17 +62,16 @@ export function RiskPieChart({ data = [], height = 200 }) {
         </ResponsiveContainer>
       </div>
 
-      {/* Minimal Legend */}
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-2 text-[11px] text-[#929A98]">
+      {/* Clean Minimal Legend */}
+      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 mt-3 text-[11px] text-text-secondary">
         {chartData.map((item) => (
           <div key={item.name} className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
             <span>{item.name}:</span>
-            <span className="font-medium text-[#F2F2EF]">{item.value}</span>
+            <span className="font-semibold text-text-primary">{item.value}</span>
           </div>
         ))}
       </div>
     </div>
   );
 }
-

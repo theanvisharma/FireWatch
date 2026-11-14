@@ -9,24 +9,26 @@ export default {
     extend: {
       colors: {
         bg: {
-          main: '#0D0F10',
-          secondary: '#141718',
-          card: '#191D1E',
-          elevated: '#202526',
+          main: 'var(--bg-main)',
+          secondary: 'var(--bg-secondary)',
+          card: 'var(--bg-card)',
+          elevated: 'var(--bg-elevated)',
+          input: 'var(--bg-input)',
         },
         border: {
-          subtle: '#2B3031',
-          hover: '#3D4446',
+          subtle: 'var(--border-subtle)',
+          hover: 'var(--border-hover)',
+          focus: 'var(--border-focus)',
         },
         text: {
-          primary: '#F2F2EF',
-          secondary: '#929A98',
-          muted: '#697270',
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
         },
         brand: {
-          orange: '#D97735',
-          soft: '#B96932',
-          highlight: '#E69A5C',
+          orange: 'var(--brand-orange)',
+          hover: 'var(--brand-orange-hover)',
+          soft: 'var(--brand-soft)',
         },
         risk: {
           low: '#43A879',
@@ -38,19 +40,19 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       borderRadius: {
         'panel': '12px',
-        'subtle': '10px',
+        'subtle': '8px',
         'card': '14px',
       },
       boxShadow: {
-        'subtle': '0 2px 8px rgba(0, 0, 0, 0.4)',
-        'elevated': '0 4px 20px rgba(0, 0, 0, 0.5)',
+        'subtle': 'var(--shadow-subtle)',
+        'card': 'var(--shadow-card)',
+        'elevated': 'var(--shadow-elevated)',
       },
     },
   },
   plugins: [],
 }
-

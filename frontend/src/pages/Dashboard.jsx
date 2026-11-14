@@ -5,11 +5,13 @@ import { RiskDistributionWidget } from '../components/dashboard/RiskDistribution
 import { RecentPredictionsTable } from '../components/dashboard/RecentPredictionsTable';
 import { ActiveAlertsList } from '../components/dashboard/ActiveAlertsList';
 import { MiniMapCard } from '../components/dashboard/MiniMapCard';
+import { OutlookCard } from '../components/dashboard/OutlookCard';
 import { SimulationDisclaimer } from '../components/common/SimulationDisclaimer';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { Button } from '../components/common/Button';
 import { riskService } from '../services/riskService';
 import { alertService } from '../services/alertService';
-import { ShieldCheck, RefreshCw, Flame, Radio } from 'lucide-react';
+import { RefreshCw, Clock, Radio } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export function Dashboard() {
@@ -17,7 +19,8 @@ export function Dashboard() {
   const [summary, setSummary] = useState(null);
   const [alerts, setAlerts] = useState([]);
   const [sectors, setSectors] = useState([]);
-  const { addToast } = useApp();
+  const [lastUpdated, setLastUpdated] = useState('');
+  const { addToast, selectedLocation } = useApp();
 
   const loadDashboardData = async () => {
     setLoading(true);
@@ -30,6 +33,7 @@ export function Dashboard() {
       setSummary(sumRes.data);
       setAlerts(alertRes.data);
       setSectors(mapRes.data.features || []);
+      setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
     } catch (err) {
       console.error('Failed to load dashboard telemetry:', err);
       addToast('Failed to load live telemetry; loaded local cache', 'warning');
@@ -42,69 +46,76 @@ export function Dashboard() {
     loadDashboardData();
   }, []);
 
-  if (loading) {
+  if (loading && !summary) {
     return <LoadingSpinner text="Synthesizing multi-spectral risk models..." />;
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Welcome & Status Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#2B3031]">
+    <div className="space-y-6 animate-fade-in pb-8">
+      {/* Top Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-border-subtle">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-xl font-bold tracking-tight text-[#F2F2EF]">
-              FireWatch AI Surveillance
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-text-primary">
+              Wildfire Intelligence Dashboard
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#202526] border border-[#2B3031] text-[#929A98]">
-              CONTROL CENTRE
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-panel bg-bg-elevated border border-border-subtle text-text-muted font-semibold">
+              NATIONAL SURVEILLANCE
             </span>
           </div>
-          <p className="text-xs text-[#929A98]">
-            Proactive wildfire ignition risk forecasting powered by satellite remote sensing & machine learning.
+          <p className="text-xs text-text-secondary leading-relaxed">
+            Continuous 24/7 environmental telemetry analysis and proactive ignition forecasting across high-risk forest zones.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
+        <div className="flex items-center gap-3 self-start md:self-center">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-panel bg-bg-elevated border border-border-subtle text-xs font-mono text-text-muted">
+            <Clock className="w-3.5 h-3.5" />
+            <span>Updated: {lastUpdated || 'Live'}</span>
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={RefreshCw}
             onClick={() => {
               loadDashboardData();
               addToast('Telemetry refreshed', 'success');
             }}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-panel text-xs font-medium bg-[#191D1E] hover:bg-[#202526] text-[#929A98] hover:text-[#F2F2EF] border border-[#2B3031] transition-colors"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Refresh Telemetry</span>
-          </button>
+            Refresh Data
+          </Button>
         </div>
       </div>
 
-      {/* Prominent Demo Data Notice */}
+      {/* Simulation Disclaimer Banner */}
       <SimulationDisclaimer />
 
-      {/* Metrics Row: 4 Essential Cards */}
+      {/* Overview Statistics (4 Compact Cards) */}
       <MetricsOverview summary={summary} />
 
-      {/* Environmental Condition Summary */}
+      {/* Main Grid: 24-72h Risk Outlook + Risk Distribution */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <OutlookCard selectedSector={selectedLocation} />
+        </div>
+        <div className="lg:col-span-1">
+          <RiskDistributionWidget distribution={summary?.risk_distribution} />
+        </div>
+      </div>
+
+      {/* Environmental Conditions Summary */}
       {summary && (
         <EnvironmentalSummaryCard data={summary.environmental_summary} />
       )}
 
-      {/* Two Column Grid: Risk Distribution + Mini Risk Map */}
+      {/* 2-Column Content: Wildfire Overview Map Preview + Recent Alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RiskDistributionWidget distribution={summary?.risk_distribution} />
         <MiniMapCard sectors={sectors} />
+        <ActiveAlertsList alerts={alerts} />
       </div>
 
-      {/* Two Column Grid: Recent Predictions Table + Recent Alerts List */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <RecentPredictionsTable predictions={sectors} />
-        </div>
-        <div className="lg:col-span-1">
-          <ActiveAlertsList alerts={alerts} />
-        </div>
-      </div>
+      {/* Recent Predictions Table */}
+      <RecentPredictionsTable predictions={sectors} />
     </div>
   );
 }
-

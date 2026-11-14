@@ -6,13 +6,13 @@ export function RiskBadge({ level = 'Low', score = null, size = 'md', className 
 
   const sizeClasses = {
     sm: 'text-[11px] px-2 py-0.5',
-    md: 'text-xs px-2.5 py-1',
-    lg: 'text-sm px-3.5 py-1.5 font-semibold',
+    md: 'text-xs px-2.5 py-0.5 font-medium',
+    lg: 'text-sm px-3.5 py-1 font-semibold',
   };
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border font-medium tracking-wide transition-colors ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border tracking-wide transition-colors ${sizeClasses[size]} ${className}`}
       style={{
         color: styles.color,
         backgroundColor: styles.backgroundColor,
@@ -20,14 +20,15 @@ export function RiskBadge({ level = 'Low', score = null, size = 'md', className 
       }}
     >
       <span
-        className="w-1.5 h-1.5 rounded-full"
+        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
         style={{ backgroundColor: styles.color }}
       />
-      <span>{level}</span>
+      <span className="font-semibold">{level}</span>
       {score !== null && score !== undefined && (
-        <span className="opacity-80 text-[10px] ml-0.5">({Number(score).toFixed(0)}%)</span>
+        <span className="opacity-90 text-[10px] ml-0.5 font-mono">
+          ({Number(score).toFixed(0)}%)
+        </span>
       )}
     </span>
   );
 }
-

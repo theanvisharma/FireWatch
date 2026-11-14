@@ -18,25 +18,25 @@ export function ToastContainer() {
 
 function ToastItem({ toast, onClose }) {
   const icons = {
-    success: <CheckCircle className="w-4 h-4 text-[#43A879]" />,
-    error: <AlertCircle className="w-4 h-4 text-[#D95343]" />,
-    warning: <AlertCircle className="w-4 h-4 text-[#D5B34A]" />,
-    info: <Info className="w-4 h-4 text-[#D97735]" />,
+    success: <CheckCircle className="w-4 h-4 text-[#43A879] flex-shrink-0" />,
+    error: <AlertCircle className="w-4 h-4 text-[#D95343] flex-shrink-0" />,
+    warning: <AlertCircle className="w-4 h-4 text-[#D5B34A] flex-shrink-0" />,
+    info: <Info className="w-4 h-4 text-brand-orange flex-shrink-0" />,
   };
 
   return (
-    <div className="pointer-events-auto flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-panel bg-[#191D1E] border border-[#2B3031] shadow-elevated text-xs text-[#F2F2EF] animate-fade-in">
+    <div className="pointer-events-auto flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-card bg-bg-card border border-border-subtle shadow-elevated text-xs text-text-primary animate-fade-in">
       <div className="flex items-center gap-2.5">
         {icons[toast.type] || icons.info}
-        <span>{toast.message}</span>
+        <span className="font-medium">{toast.message}</span>
       </div>
       <button
         onClick={onClose}
-        className="text-[#697270] hover:text-[#F2F2EF] transition-colors p-0.5"
+        className="text-text-muted hover:text-text-primary transition-colors p-1 rounded-panel"
+        aria-label="Dismiss toast"
       >
         <X className="w-3.5 h-3.5" />
       </button>
     </div>
   );
 }
-

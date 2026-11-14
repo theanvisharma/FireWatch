@@ -7,12 +7,15 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
+import { useApp } from '../../context/AppContext';
 
 export function EnvironmentalComparisonChart({ sectors = [], height = 240 }) {
+  const { theme } = useApp();
+  const isDark = theme === 'dark';
+
   const chartData = sectors.slice(0, 6).map((s) => ({
-    name: s.name.split(' ')[0], // short name
+    name: s.name.split(' ')[0],
     fullName: s.name,
     temperature: s.factors.temperature,
     wind_speed: s.factors.wind_speed,
@@ -20,16 +23,19 @@ export function EnvironmentalComparisonChart({ sectors = [], height = 240 }) {
     risk_score: s.risk_score,
   }));
 
+  const gridColor = isDark ? '#202526' : '#E5E9E7';
+  const axisColor = isDark ? '#697270' : '#8E9995';
+
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const full = payload[0]?.payload?.fullName || label;
       return (
-        <div className="bg-[#191D1E] border border-[#2B3031] rounded-panel p-2.5 shadow-elevated text-xs font-mono">
-          <div className="text-[#F2F2EF] font-semibold mb-1">{full}</div>
+        <div className="bg-bg-card border border-border-subtle rounded-card p-3 shadow-elevated text-xs font-mono">
+          <div className="text-text-primary font-bold mb-1.5">{full}</div>
           {payload.map((item) => (
             <div key={item.name} className="flex items-center justify-between gap-4 py-0.5">
-              <span className="text-[#929A98]">{item.name}:</span>
-              <span className="font-bold text-[#F2F2EF]">{item.value}</span>
+              <span className="text-text-secondary">{item.name}:</span>
+              <span className="font-bold text-text-primary">{item.value}</span>
             </div>
           ))}
         </div>
@@ -42,9 +48,9 @@ export function EnvironmentalComparisonChart({ sectors = [], height = 240 }) {
     <div style={{ width: '100%', height }}>
       <ResponsiveContainer>
         <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#202526" />
-          <XAxis dataKey="name" stroke="#697270" fontSize={11} tickLine={false} />
-          <YAxis stroke="#697270" fontSize={11} tickLine={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+          <XAxis dataKey="name" stroke={axisColor} fontSize={11} tickLine={false} />
+          <YAxis stroke={axisColor} fontSize={11} tickLine={false} />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="temperature" name="Temp (°C)" fill="#DB873A" radius={[3, 3, 0, 0]} />
           <Bar dataKey="wind_speed" name="Wind (km/h)" fill="#D5B34A" radius={[3, 3, 0, 0]} />
@@ -55,3 +61,5 @@ export function EnvironmentalComparisonChart({ sectors = [], height = 240 }) {
   );
 }
 
+// Re-export as ChartCard alias
+export const ChartCard = EnvironmentalComparisonChart;

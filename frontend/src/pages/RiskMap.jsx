@@ -4,16 +4,15 @@ import { LocationInfoDrawer } from '../components/maps/LocationInfoDrawer';
 import { MapLegend } from '../components/maps/MapLegend';
 import { SimulationDisclaimer } from '../components/common/SimulationDisclaimer';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { Button } from '../components/common/Button';
 import { riskService } from '../services/riskService';
 import { useApp } from '../context/AppContext';
 import {
   MapPin,
-  Search,
-  Sliders,
   Sparkles,
-  RefreshCw,
-  Compass,
-  Layers,
+  Filter,
+  Search,
+  RotateCcw,
 } from 'lucide-react';
 
 export function RiskMap() {
@@ -21,9 +20,11 @@ export function RiskMap() {
   const [sectors, setSectors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [layers, setLayers] = useState({ polygons: true, markers: true });
+  const [selectedRiskFilter, setSelectedRiskFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const [showSimModal, setShowSimModal] = useState(false);
 
-  // Simulation Form State for On-Demand Prediction Testing
+  // Simulation Form State
   const [simForm, setSimForm] = useState({
     latitude: 18.52,
     longitude: 73.85,
@@ -65,7 +66,7 @@ export function RiskMap() {
       const res = await riskService.requestPrediction(simForm);
       const newCustomSector = {
         id: res.data.location_id,
-        name: `Custom Coordinate (${simForm.latitude}, ${simForm.longitude})`,
+        name: `Custom Location (${simForm.latitude}, ${simForm.longitude})`,
         region: 'User Simulation Sector',
         latitude: Number(simForm.latitude),
         longitude: Number(simForm.longitude),
@@ -73,7 +74,7 @@ export function RiskMap() {
         risk_level: res.data.risk_level,
         factors: res.data.factors,
         prediction_horizon: res.data.prediction_horizon,
-        summary: `Custom parameter run: Ignition index computed at ${res.data.risk_score}%. Top factors: thermal stress and dry fuel deficit.`,
+        summary: `Custom run: Ignition probability calculated at ${res.data.risk_score}%. Key contributors: thermal stress and dry fuel deficit.`,
         polygon: [
           [simForm.latitude - 0.04, simForm.longitude - 0.04],
           [simForm.latitude + 0.04, simForm.longitude - 0.04],
@@ -86,7 +87,7 @@ export function RiskMap() {
       setSectors((prev) => [newCustomSector, ...prev]);
       setSelectedLocation(newCustomSector);
       setShowSimModal(false);
-      addToast(`Prediction computed: ${res.data.risk_level} Risk (${res.data.risk_score}%)`, 'success');
+      addToast(`Prediction calculated: ${res.data.risk_level} Risk (${res.data.risk_score}%)`, 'success');
     } catch (err) {
       addToast('Prediction request failed', 'error');
     } finally {
@@ -94,43 +95,99 @@ export function RiskMap() {
     }
   };
 
+  // Filter sectors by search and risk level
+  const filteredSectors = sectors.filter((s) => {
+    const matchesRisk =
+      selectedRiskFilter === 'All' ||
+      s.risk_level.toLowerCase() === selectedRiskFilter.toLowerCase();
+    const matchesSearch =
+      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.region.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesRisk && matchesSearch;
+  });
+
+  const riskFilters = ['All', 'Extreme', 'Very High', 'High', 'Moderate', 'Low'];
+
   if (loading) {
-    return <LoadingSpinner text="Rendering Leaflet geospatial risk layers..." />;
+    return <LoadingSpinner text="Rendering geospatial risk layers..." />;
   }
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      {/* Header & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#2B3031]">
+    <div className="space-y-4 animate-fade-in pb-8">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border-subtle">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-[#F2F2EF] flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-[#D97735]" />
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-text-primary flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-brand-orange" />
             Interactive Wildfire Risk Map
           </h1>
-          <p className="text-xs text-[#929A98]">
-            Geospatial surface intelligence and ignition vulnerability contours. Click on any sector to inspect telemetry.
+          <p className="text-xs text-text-secondary leading-relaxed">
+            Geospatial surface intelligence and ignition vulnerability contours. Select any basin or marker to inspect environmental telemetry.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowSimModal(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-panel text-xs font-semibold bg-[#D97735] hover:bg-[#B96932] text-[#F2F2EF] transition-all shadow-sm"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Test Prediction Model</span>
-          </button>
-        </div>
+        <Button
+          variant="primary"
+          size="sm"
+          icon={Sparkles}
+          onClick={() => setShowSimModal(true)}
+        >
+          Test Prediction Model
+        </Button>
       </div>
 
       <SimulationDisclaimer />
 
+      {/* Map Control Bar: Search & Severity Filters */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 p-3.5 rounded-card bg-bg-card border border-border-subtle shadow-card text-xs">
+        {/* Search by location */}
+        <div className="relative w-full lg:w-72">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search sectors on map..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-bg-input border border-border-subtle focus:border-border-focus focus:outline-none rounded-panel pl-8 pr-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted shadow-subtle"
+          />
+        </div>
+
+        {/* Severity Category Filters */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-text-muted text-[11px] font-semibold mr-1 flex items-center gap-1">
+            <Filter className="w-3 h-3" />
+            Filter Severity:
+          </span>
+          {riskFilters.map((lvl) => {
+            const isActive = selectedRiskFilter === lvl;
+            return (
+              <button
+                key={lvl}
+                type="button"
+                onClick={() => setSelectedRiskFilter(lvl)}
+                className={`px-2.5 py-1 rounded-panel text-[11px] font-semibold transition-all duration-150 ${
+                  isActive
+                    ? 'bg-brand-orange text-white shadow-subtle'
+                    : 'bg-bg-elevated text-text-secondary hover:text-text-primary hover:bg-border-subtle border border-border-subtle'
+                }`}
+              >
+                {lvl}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="text-[11px] text-text-muted font-mono self-end lg:self-center">
+          Showing {filteredSectors.length} of {sectors.length} sectors
+        </div>
+      </div>
+
       {/* Main Map Workspace with Sidebar Drawer */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
         {/* Map Canvas (3 Columns) */}
         <div className="lg:col-span-3 relative">
           <RiskMapContainer
-            sectors={sectors}
+            sectors={filteredSectors}
             selectedLocation={selectedLocation}
             onSelectLocation={(sec) => {
               setSelectedLocation(sec);
@@ -157,20 +214,22 @@ export function RiskMap() {
 
       {/* On-Demand Prediction Simulator Modal */}
       {showSimModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#191D1E] border border-[#2B3031] rounded-card p-6 max-w-lg w-full shadow-elevated">
-            <div className="flex items-start justify-between pb-3 border-b border-[#2B3031] mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-bg-card border border-border-subtle rounded-card p-6 max-w-lg w-full shadow-elevated">
+            <div className="flex items-start justify-between pb-3.5 border-b border-border-subtle mb-4">
               <div>
-                <h3 className="text-sm font-bold text-[#F2F2EF]">
+                <h3 className="text-sm font-bold text-text-primary">
                   On-Demand Wildfire Risk Simulator
                 </h3>
-                <p className="text-xs text-[#929A98]">
+                <p className="text-xs text-text-secondary mt-0.5">
                   Test the standardized AI/ML inference schema with custom coordinates & weather factors.
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setShowSimModal(false)}
-                className="text-[#697270] hover:text-[#F2F2EF] text-sm"
+                className="text-text-muted hover:text-text-primary text-sm p-1"
+                aria-label="Close modal"
               >
                 ✕
               </button>
@@ -179,24 +238,24 @@ export function RiskMap() {
             <form onSubmit={handleRunSimulation} className="space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[#929A98] block mb-1">Latitude</label>
+                  <label className="text-text-secondary block mb-1 font-medium">Latitude</label>
                   <input
                     type="number"
                     step="0.001"
                     value={simForm.latitude}
                     onChange={(e) => setSimForm({ ...simForm, latitude: parseFloat(e.target.value) })}
-                    className="w-full bg-[#141718] border border-[#2B3031] rounded-panel p-2 text-[#F2F2EF] focus:border-[#D97735] focus:outline-none font-mono"
+                    className="w-full bg-bg-input border border-border-subtle rounded-panel p-2 text-text-primary focus:border-border-focus focus:outline-none font-mono"
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-[#929A98] block mb-1">Longitude</label>
+                  <label className="text-text-secondary block mb-1 font-medium">Longitude</label>
                   <input
                     type="number"
                     step="0.001"
                     value={simForm.longitude}
                     onChange={(e) => setSimForm({ ...simForm, longitude: parseFloat(e.target.value) })}
-                    className="w-full bg-[#141718] border border-[#2B3031] rounded-panel p-2 text-[#F2F2EF] focus:border-[#D97735] focus:outline-none font-mono"
+                    className="w-full bg-bg-input border border-border-subtle rounded-panel p-2 text-text-primary focus:border-border-focus focus:outline-none font-mono"
                     required
                   />
                 </div>
@@ -204,22 +263,22 @@ export function RiskMap() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[#929A98] block mb-1">Temperature (°C)</label>
+                  <label className="text-text-secondary block mb-1 font-medium">Temperature (°C)</label>
                   <input
                     type="number"
                     value={simForm.temperature}
                     onChange={(e) => setSimForm({ ...simForm, temperature: parseFloat(e.target.value) })}
-                    className="w-full bg-[#141718] border border-[#2B3031] rounded-panel p-2 text-[#F2F2EF] focus:border-[#D97735] focus:outline-none font-mono"
+                    className="w-full bg-bg-input border border-border-subtle rounded-panel p-2 text-text-primary focus:border-border-focus focus:outline-none font-mono"
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-[#929A98] block mb-1">Wind Speed (km/h)</label>
+                  <label className="text-text-secondary block mb-1 font-medium">Wind Speed (km/h)</label>
                   <input
                     type="number"
                     value={simForm.wind_speed}
                     onChange={(e) => setSimForm({ ...simForm, wind_speed: parseFloat(e.target.value) })}
-                    className="w-full bg-[#141718] border border-[#2B3031] rounded-panel p-2 text-[#F2F2EF] focus:border-[#D97735] focus:outline-none font-mono"
+                    className="w-full bg-bg-input border border-border-subtle rounded-panel p-2 text-text-primary focus:border-border-focus focus:outline-none font-mono"
                     required
                   />
                 </div>
@@ -227,41 +286,43 @@ export function RiskMap() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[#929A98] block mb-1">Rainfall 72h (mm)</label>
+                  <label className="text-text-secondary block mb-1 font-medium">Rainfall 72h (mm)</label>
                   <input
                     type="number"
                     value={simForm.rainfall}
                     onChange={(e) => setSimForm({ ...simForm, rainfall: parseFloat(e.target.value) })}
-                    className="w-full bg-[#141718] border border-[#2B3031] rounded-panel p-2 text-[#F2F2EF] focus:border-[#D97735] focus:outline-none font-mono"
+                    className="w-full bg-bg-input border border-border-subtle rounded-panel p-2 text-text-primary focus:border-border-focus focus:outline-none font-mono"
                   />
                 </div>
                 <div>
-                  <label className="text-[#929A98] block mb-1">Soil Moisture (%)</label>
+                  <label className="text-text-secondary block mb-1 font-medium">Soil Moisture (%)</label>
                   <input
                     type="number"
                     value={simForm.soil_moisture}
                     onChange={(e) => setSimForm({ ...simForm, soil_moisture: parseFloat(e.target.value) })}
-                    className="w-full bg-[#141718] border border-[#2B3031] rounded-panel p-2 text-[#F2F2EF] focus:border-[#D97735] focus:outline-none font-mono"
+                    className="w-full bg-bg-input border border-border-subtle rounded-panel p-2 text-text-primary focus:border-border-focus focus:outline-none font-mono"
                     required
                   />
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-[#2B3031] flex items-center justify-end gap-2">
-                <button
+              <div className="pt-3 border-t border-border-subtle flex items-center justify-end gap-2.5">
+                <Button
+                  variant="secondary"
+                  size="sm"
                   type="button"
                   onClick={() => setShowSimModal(false)}
-                  className="px-3.5 py-2 rounded-panel bg-[#202526] hover:bg-[#2B3031] text-[#929A98] transition-colors"
                 >
                   Cancel
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
                   type="submit"
-                  disabled={simLoading}
-                  className="px-4 py-2 rounded-panel bg-[#D97735] hover:bg-[#B96932] text-[#F2F2EF] font-semibold transition-colors disabled:opacity-50"
+                  loading={simLoading}
                 >
-                  {simLoading ? 'Calculating...' : 'Run Prediction'}
-                </button>
+                  Run Prediction
+                </Button>
               </div>
             </form>
           </div>
@@ -270,4 +331,3 @@ export function RiskMap() {
     </div>
   );
 }
-

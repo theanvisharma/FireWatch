@@ -7,7 +7,6 @@ import {
   Clock,
   Compass,
   CheckCircle2,
-  Radio,
   ExternalLink,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -42,46 +41,53 @@ export function AlertCard({ alert, onMarkRead }) {
 
   return (
     <Card
-      className={`p-5 transition-all ${
-        alert.is_read ? 'opacity-70 bg-[#141718]' : 'bg-[#191D1E] border-l-4 border-l-[#D97735]'
+      className={`p-5 transition-all duration-150 ${
+        alert.is_read
+          ? 'opacity-70 bg-bg-card'
+          : 'bg-bg-card border-l-4 border-l-brand-orange shadow-card'
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
         <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="font-mono text-[10px] text-[#697270]">{alert.id}</span>
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+            <span className="font-mono text-[10px] text-text-muted px-1.5 py-0.5 rounded bg-bg-elevated border border-border-subtle">
+              {alert.id}
+            </span>
             <RiskBadge level={alert.severity} score={alert.risk_score} size="sm" />
-            <span className="text-[10px] text-[#697270] flex items-center gap-1 font-mono">
+            <span className="text-[10px] text-text-muted flex items-center gap-1 font-mono">
               <Clock className="w-3 h-3" />
               {formatTimeAgo(alert.timestamp)}
             </span>
           </div>
-          <h4 className="text-sm font-bold text-[#F2F2EF]">{alert.location_name}</h4>
-          <div className="flex items-center gap-2 text-[11px] text-[#929A98] font-mono mt-0.5">
-            <Compass className="w-3 h-3 text-[#697270]" />
+          <h4 className="text-sm font-bold text-text-primary">{alert.location_name}</h4>
+          <div className="flex items-center gap-2 text-[11px] text-text-secondary font-mono mt-0.5">
+            <Compass className="w-3 h-3 text-text-muted" />
             <span>{formatCoords(alert.latitude, alert.longitude)}</span>
-            <span className="text-[#697270]">| Radius: {alert.affected_radius_km} km</span>
+            <span className="text-text-muted">| Radius: {alert.affected_radius_km} km</span>
           </div>
         </div>
 
         <div className="flex items-center gap-2 self-start">
           <button
+            type="button"
             onClick={handleInspectMap}
-            className="p-1.5 rounded-lg bg-[#202526] hover:bg-[#2B3031] text-[#929A98] hover:text-[#F2F2EF] border border-[#2B3031] transition-colors"
+            className="p-1.5 rounded-panel bg-bg-elevated hover:bg-border-subtle text-text-secondary hover:text-text-primary border border-border-subtle transition-colors"
             title="Locate on Risk Map"
+            aria-label="Locate on map"
           >
             <ExternalLink className="w-3.5 h-3.5" />
           </button>
           {!alert.is_read ? (
             <button
+              type="button"
               onClick={() => onMarkRead(alert.id)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-panel text-xs font-medium bg-[#202526] hover:bg-[#2B3031] text-[#F2F2EF] border border-[#2B3031] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-panel text-xs font-semibold bg-bg-elevated hover:bg-border-subtle text-text-primary border border-border-subtle transition-colors"
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-[#43A879]" />
               <span>Acknowledge</span>
             </button>
           ) : (
-            <span className="text-[11px] text-[#697270] flex items-center gap-1 font-mono px-2 py-1 rounded bg-[#202526]/50">
+            <span className="text-[11px] text-text-muted flex items-center gap-1 font-mono px-2 py-1 rounded bg-bg-elevated border border-border-subtle">
               <CheckCircle2 className="w-3 h-3 text-[#43A879]" />
               Acknowledged
             </span>
@@ -89,24 +95,23 @@ export function AlertCard({ alert, onMarkRead }) {
         </div>
       </div>
 
-      {/* Alert Message */}
-      <p className="text-xs text-[#929A98] leading-relaxed mb-4 bg-[#141718] p-3 rounded-panel border border-[#2B3031]/60">
+      {/* Alert Description Message */}
+      <p className="text-xs text-text-secondary leading-relaxed mb-4 bg-bg-elevated p-3 rounded-panel border border-border-subtle">
         {alert.message}
       </p>
 
-      {/* Suggested Preventive Action Directives */}
-      <div className="pt-3 border-t border-[#2B3031] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-        <div className="flex items-start sm:items-center gap-2 text-[#E69A5C]">
-          <ShieldAlert className="w-4 h-4 flex-shrink-0 text-[#D97735] mt-0.5 sm:mt-0" />
-          <span className="font-medium">
-            <span className="text-[#929A98]">Action Directive:</span> {alert.preventive_action}
+      {/* Action Directive */}
+      <div className="pt-3 border-t border-border-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+        <div className="flex items-start sm:items-center gap-2 text-brand-orange">
+          <ShieldAlert className="w-4 h-4 flex-shrink-0 text-brand-orange mt-0.5 sm:mt-0" />
+          <span className="font-semibold text-text-primary text-[11px]">
+            <span className="text-text-muted font-normal">Action Directive:</span> {alert.preventive_action}
           </span>
         </div>
-        <span className="text-[10px] font-mono uppercase text-[#697270] tracking-wider">
+        <span className="text-[10px] font-mono uppercase text-text-muted font-medium tracking-wider">
           Status: {alert.status}
         </span>
       </div>
     </Card>
   );
 }
-

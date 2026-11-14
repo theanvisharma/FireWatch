@@ -10,8 +10,9 @@ import {
 import { RISK_COLORS } from '../../utils/constants';
 import { formatCoords } from '../../utils/formatters';
 import { RiskBadge } from '../common/RiskBadge';
+import { useApp } from '../../context/AppContext';
 
-// Map controller helper to smoothly pan/zoom when location selection changes
+// Smooth map panning/zooming when selectedLocation changes
 function MapRecenter({ center, zoom }) {
   const map = useMap();
   useEffect(() => {
@@ -24,13 +25,35 @@ function MapRecenter({ center, zoom }) {
   return null;
 }
 
+// Tile Layer component that switches dynamically when theme changes
+function DynamicTileLayer() {
+  const { theme } = useApp();
+  const isDark = theme === 'dark';
+
+  const tileUrl = isDark
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+
+  return (
+    <TileLayer
+      key={theme} // Forces re-mount when theme flips
+      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+      url={tileUrl}
+      maxZoom={19}
+    />
+  );
+}
+
 export function RiskMapContainer({
   sectors = [],
   selectedLocation,
   onSelectLocation = () => {},
   layers = { polygons: true, markers: true },
-  height = '620px',
+  height = '600px',
 }) {
+  const { theme } = useApp();
+  const isDark = theme === 'dark';
+
   const defaultCenter = selectedLocation
     ? [selectedLocation.latitude, selectedLocation.longitude]
     : [18.7557, 73.4091];
@@ -38,7 +61,7 @@ export function RiskMapContainer({
   return (
     <div
       style={{ height, width: '100%' }}
-      className="rounded-panel overflow-hidden border border-[#2B3031] relative"
+      className="rounded-card overflow-hidden border border-border-subtle relative shadow-card"
     >
       <MapContainer
         center={defaultCenter}
@@ -56,12 +79,8 @@ export function RiskMapContainer({
           zoom={selectedLocation ? 9 : 7}
         />
 
-        {/* CartoDB Dark Matter Tiles */}
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          maxZoom={19}
-        />
+        {/* Dynamic Dark / Light Tiles */}
+        <DynamicTileLayer />
 
         {/* Polygons */}
         {layers.polygons &&
@@ -75,9 +94,9 @@ export function RiskMapContainer({
                 key={`poly-${sector.id}`}
                 positions={sector.polygon}
                 pathOptions={{
-                  color: isSelected ? '#F2F2EF' : color,
+                  color: isSelected ? (isDark ? '#F2F2EF' : '#202725') : color,
                   fillColor: color,
-                  fillOpacity: isSelected ? 0.35 : 0.18,
+                  fillOpacity: isSelected ? 0.38 : 0.18,
                   weight: isSelected ? 2.5 : 1.2,
                   dashArray: isSelected ? '4, 4' : null,
                 }}
@@ -87,12 +106,12 @@ export function RiskMapContainer({
               >
                 <Popup>
                   <div className="p-1 text-xs">
-                    <div className="font-bold text-[#F2F2EF] mb-1">{sector.name}</div>
-                    <div className="text-[11px] text-[#929A98] mb-2 font-mono">
+                    <div className="font-bold text-text-primary mb-1">{sector.name}</div>
+                    <div className="text-[11px] text-text-muted mb-2 font-mono">
                       {formatCoords(sector.latitude, sector.longitude)}
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[#697270]">Predicted Risk:</span>
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-text-secondary text-[11px]">Predicted Risk:</span>
                       <RiskBadge level={sector.risk_level} score={sector.risk_score} size="sm" />
                     </div>
                   </div>
@@ -113,7 +132,7 @@ export function RiskMapContainer({
                 center={[sector.latitude, sector.longitude]}
                 radius={isSelected ? 10 : 7}
                 pathOptions={{
-                  color: isSelected ? '#F2F2EF' : color,
+                  color: isSelected ? (isDark ? '#F2F2EF' : '#202725') : color,
                   fillColor: color,
                   fillOpacity: 0.9,
                   weight: isSelected ? 3 : 1.5,
@@ -124,12 +143,12 @@ export function RiskMapContainer({
               >
                 <Popup>
                   <div className="p-1 text-xs">
-                    <div className="font-bold text-[#F2F2EF] mb-1">{sector.name}</div>
-                    <div className="text-[11px] text-[#929A98] mb-2 font-mono">
+                    <div className="font-bold text-text-primary mb-1">{sector.name}</div>
+                    <div className="text-[11px] text-text-muted mb-2 font-mono">
                       {formatCoords(sector.latitude, sector.longitude)}
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[#697270]">Risk Level:</span>
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-text-secondary text-[11px]">Risk Level:</span>
                       <RiskBadge level={sector.risk_level} score={sector.risk_score} size="sm" />
                     </div>
                   </div>
@@ -141,4 +160,3 @@ export function RiskMapContainer({
     </div>
   );
 }
-
